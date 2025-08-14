@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calculadora Inteligente de Preço — Amigurumi</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0b0f;           /* fundo “console” */
+    --panel:#12131a;
+    --muted:#8b91a1;
+    --text:#e8ebf3;
+    --brand:#7dd3fc;
+    --brand-2:#22d3ee;
+    --ok:#22c55e;
+    --warn:#f59e0b;
+    --danger:#ef4444;
+    --card:#161823;
+    --input:#0f1117;
+    --ring:#1f6feb44;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background: radial-gradient(1200px 600px at 15% -10%, #10131f 0%, transparent 60%) , var(--bg);
+    color:var(--text);
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+    line-height:1.35;
+  }
+
+  .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
+  header{
+    display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px
+  }
+  .title{
+    font-weight:800;font-size:clamp(20px,3vw,28px);letter-spacing:.2px;
+    display:flex;gap:10px;align-items:center
+  }
+  .title .chip{font-weight:700;font-size:12px;padding:6px 10px;border-radius:999px;background:#0f172a;color:#93c5fd;border:1px solid #1e293b}
+  .card{
+    background:linear-gradient(180deg, #12131a, #0e0f15);
+    border:1px solid #1b2030;border-radius:16px;box-shadow:0 10px 30px #00000069;
+  }
+  .grid{
+    display:grid;gap:16px;
+    grid-template-columns:repeat(12,1fr);
+  }
+  .panel{padding:18px}
+  .panel h3{
+    margin:0 0 8px;font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:#c7d2fe
+  }
+  .field{
+    display:grid;gap:6px;margin-bottom:12px
+  }
+  label{font-size:13px;color:#a5adbe}
+  input[type="text"], input[type="number"], select{
+    width:100%;background:var(--input);color:var(--text);
+    border:1px solid #22283a;border-radius:12px;padding:12px 12px;font-size:15px;
+    outline:none;transition:.2s;
+  }
+  input:focus, select:focus{border-color:#2b6cff; box-shadow:0 0 0 3px var(--ring)}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row .field{flex:1 1 180px}
+
+  .hint{font-size:12px;color:var(--muted)}
+  .muted{color:var(--muted)}
+  .badge{display:inline-block;padding:4px 8px;border:1px solid #2a3246;border-radius:999px;font-size:12px;color:#9fb3ff;background:#111524}
+  .btn{
+    background:linear-gradient(180deg,var(--brand),var(--brand-2));
+    color:#001018;font-weight:800;border:none;border-radius:12px;padding:12px 16px;font-size:15px;cursor:pointer;
+    transition:transform .05s ease;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.secondary{background:#0f172a;color:#cbd5e1;border:1px solid #1e293b}
+  .btn.block{width:100%}
+  .switch{display:flex;align-items:center;gap:10px}
+  .switch input{accent-color:#60a5fa;width:18px;height:18px}
+
+  .kpis{display:grid;gap:12px;grid-template-columns:repeat(12,1fr);padding:18px}
+  .kpi{
+    grid-column: span 4; background:var(--card); border:1px solid #22283a; border-radius:14px; padding:14px;
+  }
+  @media (max-width:900px){
+    .kpi{grid-column:span 12}
+  }
+  .kpi .label{font-size:12px;color:#a5adbe;margin-bottom:6px}
+  .kpi .value{font-size:clamp(22px,4vw,28px);font-weight:800}
+  .kpi .sub{font-size:12px;color:#8b91a1}
+
+  table{width:100%;border-collapse:separate;border-spacing:0 8px}
+  th,td{padding:10px 12px;text-align:left;font-size:14px}
+  thead th{color:#9fb3ff;font-weight:700}
+  tbody tr{background:var(--card);border:1px solid #22283a}
+  tbody tr td:first-child{border-top-left-radius:10px;border-bottom-left-radius:10px}
+  tbody tr td:last-child{border-top-right-radius:10px;border-bottom-right-radius:10px}
+  .right{text-align:right}
+
+  footer{margin:20px 0 40px;color:#738096;font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">🧶 Calculadora Inteligente de Preço <span class="chip">Amigurumi</span></div>
+      <div class="row" style="gap:8px">
+        <button class="btn secondary" id="btnSalvar">Salvar preset</button>
+        <button class="btn secondary" id="btnCarregar">Carregar preset</button>
+        <button class="btn" id="btnCalcular">Calcular</button>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="grid panel">
+        <!-- COLUNA ESQUERDA -->
+        <section style="grid-column:span 7">
+          <h3>Dados do Produto</h3>
+          <div class="row">
+            <div class="field"><label>Nome</label><input id="nome" type="text" placeholder="Ex.: Coelhinho com jardineira" /></div>
+            <div class="field">
+              <label>Tamanho</label>
+              <select id="tamanho">
+                <option value="custom">Personalizado</option>
+                <option value="P">P — 10–14 cm</option>
+                <option value="M">M — 15–20 cm</option>
+                <option value="G">G — 21–30 cm</option>
+              </select>
+              <div class="hint">Os tamanhos pré-preenchem horas e materiais (você pode ajustar).</div>
+            </div>
+          </div>
+
+          <h3>Custos de Materiais</h3>
+          <div class="row">
+            <div class="field"><label>Fios / Lãs (R$)</label><input id="matFios" type="number" step="0.01" value="25" /></div>
+            <div class="field"><label>Acessórios (olhos, botões etc.) (R$)</label><input id="matAcess" type="number" step="0.01" value="6" /></div>
+            <div class="field"><label>Enchimento e cola (R$)</label><input id="matEnch" type="number" step="0.01" value="4" /></div>
+            <div class="field"><label>Embalagem (R$)</label><input id="matEmb" type="number" step="0.01" value="3" /></div>
+          </div>
+
+          <h3>Tempo e Mão de Obra</h3>
+          <div class="row">
+            <div class="field"><label>Horas de produção</label><input id="horas" type="number" step="0.1" value="6" /></div>
+            <div class="field"><label>Valor da sua hora (R$)</label><input id="horaValor" type="number" step="0.5" value="20" /></div>
+            <div class="field">
+              <label>Dificuldade extra (%)</label>
+              <input id="dificuldade" type="number" step="1" value="10" />
+              <div class="hint">Complexidade do ponto, muitas trocas de cor, bordados etc.</div>
+            </div>
+          </div>
+
+          <h3>Custos Fixos / Taxas</h3>
+          <div class="row">
+            <div class="field"><label>Overhead (energia, desgaste de agulhas) (R$)</label><input id="overhead" type="number" step="0.50" value="2.5" /></div>
+            <div class="field"><label>Taxa da plataforma/checkout (%)</label><input id="taxaPlataforma" type="number" step="0.5" value="8" /></div>
+            <div class="field"><label>Impostos (%)</label><input id="impostos" type="number" step="0.5" value="6" /></div>
+            <div class="field"><label>Frete incluso? (R$)</label><input id="frete" type="number" step="0.5" value="0" /></div>
+          </div>
+
+          <h3>Lucro e Estratégia</h3>
+          <div class="row">
+            <div class="field"><label>Margem de lucro desejada (%)</label><input id="margem" type="number" step="1" value="40" /></div>
+            <div class="field"><label>Desconto à vista (%)</label><input id="desconto" type="number" step="1" value="5" /></div>
+            <div class="field switch">
+              <input id="psico" type="checkbox" checked />
+              <label for="psico">Arredondar psicológico (R$ _.90)</label>
+            </div>
+          </div>
+        </section>
+
+        <!-- COLUNA DIREITA -->
+        <aside style="grid-column:span 5">
+          <h3>Resultado</h3>
+          <div class="kpis">
+            <div class="kpi">
+              <div class="label">Custo de Materiais</div>
+              <div class="value" id="kMat">R$ 0,00</div>
+              <div class="sub muted">Fios + acessórios + enchimento + embalagem</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Custo de Produção</div>
+              <div class="value" id="kProd">R$ 0,00</div>
+              <div class="sub muted">Horas × valor da hora (+ dificuldade + overhead)</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Preço Recomendado</div>
+              <div class="value" id="kPreco">R$ 0,00</div>
+              <div class="sub"><span class="badge" id="badgeSaude">Margem OK</span></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Faixas de Preço</h3>
+            <table>
+              <thead><tr><th>Nível</th><th class="right">Preço</th><th class="right">à vista (−desconto)</th></tr></thead>
+              <tbody id="tblPrecos"></tbody>
+            </table>
+            <div class="hint" style="margin-top:8px">
+              * O “Recomendado” já cobre taxas + impostos + sua margem. “Premium” adiciona 15% para modelos com alta demanda/complexidade.
+            </div>
+            <div style="margin-top:14px" class="row">
+              <button class="btn block" id="btnCopiar">Copiar Resumo</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <footer>
+      Feito para você otimizar lucro sem adivinhar preço. Ajuste os campos, salve o preset e replique por modelo.
+    </footer>
+  </div>
+
+<script>
+  // Utilidades
+  const $ = (id)=>document.getElementById(id);
+  const brl = (v)=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+  function arredondarPsicologico(v){
+    // arredonda para .90 (ex.: 87,90)
+    const inteiro = Math.floor(v);
+    const alvo = inteiro + 0.90;
+    if(alvo < v) return inteiro + 1 + 0.90; // sobe 1 real e põe .90
+    return alvo;
+  }
+
+  function preencherPorTamanho(){
+    const t = $("tamanho").value;
+    // presets baseados em média de alunos
+    const presets = {
+      P:{horas:4.5, fios:18, acess:5, ench:3, emb:3},
+      M:{horas:6.5, fios:25, acess:6, ench:4, emb:3.5},
+      G:{horas:9,   fios:35, acess:7, ench:5, emb:4}
+    };
+    if(presets[t]){
+      $("horas").value     = presets[t].horas;
+      $("matFios").value   = presets[t].fios;
+      $("matAcess").value  = presets[t].acess;
+      $("matEnch").value   = presets[t].ench;
+      $("matEmb").value    = presets[t].emb;
+    }
+  }
+
+  $("tamanho").addEventListener("change", preencherPorTamanho);
+
+  function calcular(){
+    // Entrada
+    const nome = $("nome").value || "Amigurumi";
+    const matFios  = +$("matFios").value || 0;
+    const matAcess = +$("matAcess").value || 0;
+    const matEnch  = +$("matEnch").value || 0;
+    const matEmb   = +$("matEmb").value || 0;
+    const horas    = +$("horas").value || 0;
+    const horaVal  = +$("horaValor").value || 0;
+    const dificuldade = (+$("dificuldade").value || 0)/100;
+    const overhead = +$("overhead").value || 0;
+    const taxaPlat = (+$("taxaPlataforma").value || 0)/100;
+    const impostos = (+$("impostos").value || 0)/100;
+    const frete    = +$("frete").value || 0;
+    const margem   = (+$("margem").value || 0)/100;
+    const desconto = (+$("desconto").value || 0)/100;
+    const usarPsico = $("psico").checked;
+
+    // Cálculos
+    const custoMateriais = matFios + matAcess + matEnch + matEmb;
+    const maoDeObra = horas * horaVal;
+    const base = custoMateriais + maoDeObra + overhead + frete;
+    const baseDif = base * (1 + dificuldade);
+
+    // gross-up para cobrir taxas (preço antes de margem)
+    const taxaTotal = taxaPlat + impostos;
+    const antesMargem = taxaTotal >= 1 ? Infinity : baseDif / (1 - taxaTotal);
+
+    const precoRecomendadoRaw = antesMargem * (1 + margem);
+    const precoRecomendado = usarPsico ? arredondarPsicologico(precoRecomendadoRaw) : precoRecomendadoRaw;
+
+    // Faixas
+    const precoMinimoRaw = antesMargem;                  // cobre custo + taxas, sem lucro
+    const precoMinimo = usarPsico ? arredondarPsicologico(precoMinimoRaw) : precoMinimoRaw;
+
+    const precoPremiumRaw = precoRecomendado * 1.15;     // +15%
+    const precoPremium = usarPsico ? arredondarPsicologico(precoPremiumRaw) : precoPremiumRaw;
+
+    // KPI
+    $("kMat").textContent = brl(custoMateriais);
+    $("kProd").textContent = brl(maoDeObra + overhead + frete);
+    $("kPreco").textContent = brl(precoRecomendado);
+
+    const margemEfetiva = (precoRecomendado - antesMargem) / precoRecomendado;
+    const badge = $("badgeSaude");
+    badge.textContent = `Margem efetiva: ${(margemEfetiva*100).toFixed(1)}%`;
+    badge.style.color = margemEfetiva >= 0.35 ? "#22c55e" : margemEfetiva >= 0.25 ? "#f59e0b" : "#ef4444";
+
+    // Tabela
+    const linhas = [
+      {nivel:"Mínimo (sem lucro)", preco:precoMinimo},
+      {nivel:"Recomendado",         preco:precoRecomendado},
+      {nivel:"Premium (+15%)",      preco:precoPremium},
+    ];
+    const tbody = $("tblPrecos"); tbody.innerHTML = "";
+    for(const l of linhas){
+      const pv = l.preco;
+      const av = pv * (1 - desconto);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${l.nivel}</td>
+                      <td class="right">${brl(pv)}</td>
+                      <td class="right">${brl(av)}</td>`;
+      tbody.appendChild(tr);
+    }
+
+    // resumo para copiar
+    window.__resumo = {
+      nome, custoMateriais, maoDeObra, overhead, frete,
+      precoMinimo, precoRecomendado, precoPremium, desconto
+    };
+  }
+
+  function copiarResumo(){
+    if(!window.__resumo){calcular()}
+    const r = window.__resumo;
+    const txt =
+`🧶 Precificador — ${r.nome}
+• Custo de materiais: ${brl(r.custoMateriais)}
+• Mão de obra + overhead + frete: ${brl(r.maoDeObra + r.overhead + r.frete)}
+————————————
+💡 Preço mínimo (sem lucro): ${brl(r.precoMinimo)}
+✅ Preço recomendado: ${brl(r.precoRecomendado)}
+👑 Preço premium: ${brl(r.precoPremium)}
+(à vista: desconto aplicado no checkout)`;
+
+    navigator.clipboard.writeText(txt).then(()=>{
+      const btn = $("btnCopiar");
+      const old = btn.textContent;
+      btn.textContent = "Copiado ✅";
+      setTimeout(()=>btn.textContent = old, 1500);
+    });
+  }
+
+  function salvarPreset(){
+    const preset = {
+      nome: $("nome").value,
+      tamanho: $("tamanho").value,
+      matFios:+$("matFios").value, matAcess:+$("matAcess").value,
+      matEnch:+$("matEnch").value, matEmb:+$("matEmb").value,
+      horas:+$("horas").value, horaValor:+$("horaValor").value,
+      dificuldade:+$("dificuldade").value, overhead:+$("overhead").value,
+      taxaPlataforma:+$("taxaPlataforma").value, impostos:+$("impostos").value,
+      frete:+$("frete").value, margem:+$("margem").value,
+      desconto:+$("desconto").value, psico:$("psico").checked
+    };
+    localStorage.setItem("calc_amig_preset", JSON.stringify(preset));
+    toastBotao("btnSalvar","Salvo ✅");
+  }
+  function carregarPreset(){
+    const raw = localStorage.getItem("calc_amig_preset");
+    if(!raw){toastBotao("btnCarregar","Nada salvo");return}
+    const p = JSON.parse(raw);
+    $("nome").value=p.nome||"";
+    $("tamanho").value=p.tamanho||"custom";
+    $("matFios").value=p.matFios||0; $("matAcess").value=p.matAcess||0;
+    $("matEnch").value=p.matEnch||0; $("matEmb").value=p.matEmb||0;
+    $("horas").value=p.horas||0; $("horaValor").value=p.horaValor||0;
+    $("dificuldade").value=p.dificuldade||0; $("overhead").value=p.overhead||0;
+    $("taxaPlataforma").value=p.taxaPlataforma||0; $("impostos").value=p.impostos||0;
+    $("frete").value=p.frete||0; $("margem").value=p.margem||0;
+    $("desconto").value=p.desconto||0; $("psico").checked=!!p.psico;
+    calcular();
+    toastBotao("btnCarregar","Carregado ✅");
+  }
+  function toastBotao(id, msg){
+    const b=$(id), old=b.textContent; b.textContent=msg; setTimeout(()=>b.textContent=old,1200)
+  }
+
+  // Eventos
+  $("btnCalcular").addEventListener("click", calcular);
+  $("btnCopiar").addEventListener("click", copiarResumo);
+  $("btnSalvar").addEventListener("click", salvarPreset);
+  $("btnCarregar").addEventListener("click", carregarPreset);
+
+  // Auto-cálculo ao digitar
+  document.querySelectorAll("input, select").forEach(el=>{
+    el.addEventListener("input", ()=>{ if(el.type!=="button") calcular(); });
+  });
+
+  // Inicial
+  preencherPorTamanho();
+  calcular();
+</script>
+</body>
+</html>
