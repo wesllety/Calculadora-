@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: hsl(240, 25%, 4.3%);
+  --panel: hsl(240, 15%, 7.1%);
+  --muted: hsl(215, 13.8%, 56.1%);
+  --text: hsl(210, 20%, 91.8%);
+  --brand: hsl(198, 93%, 72.5%);
+  --brand-2: hsl(188, 78%, 52.5%);
+  --ok: hsl(142, 71%, 45.3%);
+  --warn: hsl(38, 92%, 50.2%);
+  --danger: hsl(0, 84%, 60.2%);
+  --card: hsl(240, 10%, 8.8%);
+  --input: hsl(240, 25%, 6.9%);
+  --ring: hsl(217, 91%, 59.8%);
+  --border: hsl(215, 25%, 12.5%);
+  --border-light: hsl(215, 16%, 16.9%);
+  --accent: hsl(225, 70%, 78.8%);
+  
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card-color: var(--card);
+  --card-foreground: var(--text);
+  --popover: var(--card);
+  --popover-foreground: var(--text);
+  --primary: var(--brand);
+  --primary-foreground: hsl(210, 40%, 5%);
+  --secondary: var(--panel);
+  --secondary-foreground: var(--text);
+  --muted-color: var(--panel);
+  --muted-foreground: var(--muted);
+  --accent-color: var(--accent);
+  --accent-foreground: var(--brand);
+  --destructive: var(--danger);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border-color: var(--border);
+  --input-color: var(--input);
+  --ring-color: var(--ring);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter antialiased;
+    background: radial-gradient(1200px 600px at 15% -10%, #10131f 0%, transparent 60%), var(--bg);
+    line-height: 1.35;
+  }
+}
+
+@layer utilities {
+  .font-inter {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Ubuntu', 'Arial', sans-serif;
+  }
+  
+  .gradient-card {
+    background: linear-gradient(180deg, var(--panel), var(--card));
+  }
+  
+  .gradient-button {
+    background: linear-gradient(180deg, var(--brand), var(--brand-2));
+  }
+  
+  .text-brand {
+    color: var(--brand);
+  }
+  
+  .text-accent {
+    color: var(--accent);
+  }
+  
+  .text-muted {
+    color: var(--muted);
+  }
+  
+  .bg-dark-input {
+    background-color: var(--input);
+  }
+  
+  .border-dark {
+    border-color: var(--border);
+  }
+  
+  .border-dark-light {
+    border-color: var(--border-light);
+  }
+}
