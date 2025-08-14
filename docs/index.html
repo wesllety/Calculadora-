@@ -2,13 +2,13 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Calculadora Inteligente de Preço — Amigurumi</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0b0b0f;           /* fundo “console” */
+    --bg:#0b0b0f;
     --panel:#12131a;
     --muted:#8b91a1;
     --text:#e8ebf3;
@@ -22,6 +22,7 @@
     --ring:#1f6feb44;
   }
   *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
   html,body{height:100%}
   body{
     margin:0;
@@ -29,11 +30,12 @@
     color:var(--text);
     font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
     line-height:1.35;
+    padding-bottom: env(safe-area-inset-bottom); /* iOS */
   }
 
   .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
   header{
-    display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px
+    display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap
   }
   .title{
     font-weight:800;font-size:clamp(20px,3vw,28px);letter-spacing:.2px;
@@ -44,17 +46,12 @@
     background:linear-gradient(180deg, #12131a, #0e0f15);
     border:1px solid #1b2030;border-radius:16px;box-shadow:0 10px 30px #00000069;
   }
-  .grid{
-    display:grid;gap:16px;
-    grid-template-columns:repeat(12,1fr);
-  }
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(12,1fr)}
   .panel{padding:18px}
   .panel h3{
     margin:0 0 8px;font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:#c7d2fe
   }
-  .field{
-    display:grid;gap:6px;margin-bottom:12px
-  }
+  .field{display:grid;gap:6px;margin-bottom:12px}
   label{font-size:13px;color:#a5adbe}
   input[type="text"], input[type="number"], select{
     width:100%;background:var(--input);color:var(--text);
@@ -80,12 +77,7 @@
   .switch input{accent-color:#60a5fa;width:18px;height:18px}
 
   .kpis{display:grid;gap:12px;grid-template-columns:repeat(12,1fr);padding:18px}
-  .kpi{
-    grid-column: span 4; background:var(--card); border:1px solid #22283a; border-radius:14px; padding:14px;
-  }
-  @media (max-width:900px){
-    .kpi{grid-column:span 12}
-  }
+  .kpi{grid-column: span 4; background:var(--card); border:1px solid #22283a; border-radius:14px; padding:14px;}
   .kpi .label{font-size:12px;color:#a5adbe;margin-bottom:6px}
   .kpi .value{font-size:clamp(22px,4vw,28px);font-weight:800}
   .kpi .sub{font-size:12px;color:#8b91a1}
@@ -99,6 +91,19 @@
   .right{text-align:right}
 
   footer{margin:20px 0 40px;color:#738096;font-size:12px;text-align:center}
+
+  /* ===== Responsividade: iOS/Android ===== */
+  @media (max-width: 900px){
+    .grid{grid-template-columns:repeat(12,1fr)}
+    /* coluna única no mobile */
+    section[style*="grid-column:span 7"]{grid-column:span 12 !important}
+    aside[style*="grid-column:span 5"]{grid-column:span 12 !important}
+    .panel{padding-bottom:84px;} /* espaço extra pra botão/rodapé não serem cortados */
+    .kpi{grid-column:span 12}
+    table{font-size:13px}
+    .btn.block{display:block;margin:0 auto;font-size:14px;padding:14px 12px}
+    header{gap:10px}
+  }
 </style>
 </head>
 <body>
@@ -133,34 +138,34 @@
 
           <h3>Custos de Materiais</h3>
           <div class="row">
-            <div class="field"><label>Fios / Lãs (R$)</label><input id="matFios" type="number" step="0.01" value="25" /></div>
-            <div class="field"><label>Acessórios (olhos, botões etc.) (R$)</label><input id="matAcess" type="number" step="0.01" value="6" /></div>
-            <div class="field"><label>Enchimento e cola (R$)</label><input id="matEnch" type="number" step="0.01" value="4" /></div>
+            <div class="field"><label>Fios / Lãs (R$)</label><input id="matFios" type="number" step="0.01" value="22" /></div>
+            <div class="field"><label>Acessórios (olhos, botões etc.) (R$)</label><input id="matAcess" type="number" step="0.01" value="5" /></div>
+            <div class="field"><label>Enchimento e cola (R$)</label><input id="matEnch" type="number" step="0.01" value="3.5" /></div>
             <div class="field"><label>Embalagem (R$)</label><input id="matEmb" type="number" step="0.01" value="3" /></div>
           </div>
 
           <h3>Tempo e Mão de Obra</h3>
           <div class="row">
-            <div class="field"><label>Horas de produção</label><input id="horas" type="number" step="0.1" value="6" /></div>
-            <div class="field"><label>Valor da sua hora (R$)</label><input id="horaValor" type="number" step="0.5" value="20" /></div>
+            <div class="field"><label>Horas de produção</label><input id="horas" type="number" step="0.1" value="5.5" /></div>
+            <div class="field"><label>Valor da sua hora (R$)</label><input id="horaValor" type="number" step="0.5" value="10" /></div>
             <div class="field">
               <label>Dificuldade extra (%)</label>
               <input id="dificuldade" type="number" step="1" value="10" />
-              <div class="hint">Complexidade do ponto, muitas trocas de cor, bordados etc.</div>
+              <div class="hint">Aplica apenas sobre a mão de obra.</div>
             </div>
           </div>
 
           <h3>Custos Fixos / Taxas</h3>
           <div class="row">
-            <div class="field"><label>Overhead (energia, desgaste de agulhas) (R$)</label><input id="overhead" type="number" step="0.50" value="2.5" /></div>
-            <div class="field"><label>Taxa da plataforma/checkout (%)</label><input id="taxaPlataforma" type="number" step="0.5" value="8" /></div>
-            <div class="field"><label>Impostos (%)</label><input id="impostos" type="number" step="0.5" value="6" /></div>
+            <div class="field"><label>Overhead (energia, desgaste de agulhas) (R$)</label><input id="overhead" type="number" step="0.50" value="2" /></div>
+            <div class="field"><label>Taxa da plataforma/checkout (%)</label><input id="taxaPlataforma" type="number" step="0.5" value="7" /></div>
+            <div class="field"><label>Impostos (%)</label><input id="impostos" type="number" step="0.5" value="4" /></div>
             <div class="field"><label>Frete incluso? (R$)</label><input id="frete" type="number" step="0.5" value="0" /></div>
           </div>
 
           <h3>Lucro e Estratégia</h3>
           <div class="row">
-            <div class="field"><label>Margem de lucro desejada (%)</label><input id="margem" type="number" step="1" value="40" /></div>
+            <div class="field"><label>Margem de lucro desejada (%)</label><input id="margem" type="number" step="1" value="35" /></div>
             <div class="field"><label>Desconto à vista (%)</label><input id="desconto" type="number" step="1" value="5" /></div>
             <div class="field switch">
               <input id="psico" type="checkbox" checked />
@@ -181,7 +186,7 @@
             <div class="kpi">
               <div class="label">Custo de Produção</div>
               <div class="value" id="kProd">R$ 0,00</div>
-              <div class="sub muted">Horas × valor da hora (+ dificuldade + overhead)</div>
+              <div class="sub muted">Horas × valor da hora (+ dificuldade na mão de obra + overhead)</div>
             </div>
             <div class="kpi">
               <div class="label">Preço Recomendado</div>
@@ -197,7 +202,7 @@
               <tbody id="tblPrecos"></tbody>
             </table>
             <div class="hint" style="margin-top:8px">
-              * O “Recomendado” já cobre taxas + impostos + sua margem. “Premium” adiciona 15% para modelos com alta demanda/complexidade.
+              * O “Recomendado” cobre taxas + impostos + sua margem. “Premium” adiciona 15% para modelos com alta demanda/complexidade.
             </div>
             <div style="margin-top:14px" class="row">
               <button class="btn block" id="btnCopiar">Copiar Resumo</button>
@@ -221,17 +226,17 @@
     // arredonda para .90 (ex.: 87,90)
     const inteiro = Math.floor(v);
     const alvo = inteiro + 0.90;
-    if(alvo < v) return inteiro + 1 + 0.90; // sobe 1 real e põe .90
+    if(alvo < v) return inteiro + 1 + 0.90;
     return alvo;
   }
 
   function preencherPorTamanho(){
     const t = $("tamanho").value;
-    // presets baseados em média de alunos
+    // presets enxutos por tamanho
     const presets = {
-      P:{horas:4.5, fios:18, acess:5, ench:3, emb:3},
-      M:{horas:6.5, fios:25, acess:6, ench:4, emb:3.5},
-      G:{horas:9,   fios:35, acess:7, ench:5, emb:4}
+      P:{horas:3.5, fios:16, acess:4.5, ench:3,   emb:3},
+      M:{horas:5.5, fios:22, acess:5.5, ench:3.5, emb:3},
+      G:{horas:8,   fios:30, acess:6.5, ench:4.5, emb:3.5}
     };
     if(presets[t]){
       $("horas").value     = presets[t].horas;
@@ -241,11 +246,9 @@
       $("matEmb").value    = presets[t].emb;
     }
   }
-
   $("tamanho").addEventListener("change", preencherPorTamanho);
 
   function calcular(){
-    // Entrada
     const nome = $("nome").value || "Amigurumi";
     const matFios  = +$("matFios").value || 0;
     const matAcess = +$("matAcess").value || 0;
@@ -262,35 +265,38 @@
     const desconto = (+$("desconto").value || 0)/100;
     const usarPsico = $("psico").checked;
 
-    // Cálculos
+    // Custos
     const custoMateriais = matFios + matAcess + matEnch + matEmb;
-    const maoDeObra = horas * horaVal;
-    const base = custoMateriais + maoDeObra + overhead + frete;
-    const baseDif = base * (1 + dificuldade);
+    const maoDeObraBase = horas * horaVal;
+    const maoDeObraComDificuldade = maoDeObraBase * (1 + dificuldade); // dificuldade apenas na mão de obra
+    const baseSemTaxa = custoMateriais + overhead + frete + maoDeObraComDificuldade;
 
-    // gross-up para cobrir taxas (preço antes de margem)
+    // Gross-up para cobrir taxas
     const taxaTotal = taxaPlat + impostos;
-    const antesMargem = taxaTotal >= 1 ? Infinity : baseDif / (1 - taxaTotal);
+    const antesMargem = taxaTotal >= 1 ? Infinity : baseSemTaxa / (1 - taxaTotal);
 
+    // Preço recomendado
     const precoRecomendadoRaw = antesMargem * (1 + margem);
     const precoRecomendado = usarPsico ? arredondarPsicologico(precoRecomendadoRaw) : precoRecomendadoRaw;
 
     // Faixas
-    const precoMinimoRaw = antesMargem;                  // cobre custo + taxas, sem lucro
+    const precoMinimoRaw = antesMargem;
     const precoMinimo = usarPsico ? arredondarPsicologico(precoMinimoRaw) : precoMinimoRaw;
 
-    const precoPremiumRaw = precoRecomendado * 1.15;     // +15%
+    const precoPremiumRaw = precoRecomendado * 1.15;
     const precoPremium = usarPsico ? arredondarPsicologico(precoPremiumRaw) : precoPremiumRaw;
 
-    // KPI
-    $("kMat").textContent = brl(custoMateriais);
-    $("kProd").textContent = brl(maoDeObra + overhead + frete);
-    $("kPreco").textContent = brl(precoRecomendado);
+    // KPIs
+    $("kMat").textContent  = brl(custoMateriais);
+    $("kProd").textContent = brl(maoDeObraComDificuldade + overhead + frete);
+    $("kPreco").textContent= brl(precoRecomendado);
 
     const margemEfetiva = (precoRecomendado - antesMargem) / precoRecomendado;
     const badge = $("badgeSaude");
-    badge.textContent = `Margem efetiva: ${(margemEfetiva*100).toFixed(1)}%`;
+    const taxaPct = (taxaTotal*100).toFixed(1);
+    badge.textContent = `Margem efetiva: ${(margemEfetiva*100).toFixed(1)}% • Taxas: ${taxaPct}%`;
     badge.style.color = margemEfetiva >= 0.35 ? "#22c55e" : margemEfetiva >= 0.25 ? "#f59e0b" : "#ef4444";
+    if (taxaTotal >= 0.25) badge.textContent += " • ⚠ taxas altas";
 
     // Tabela
     const linhas = [
@@ -309,9 +315,9 @@
       tbody.appendChild(tr);
     }
 
-    // resumo para copiar
+    // resumo p/ copiar
     window.__resumo = {
-      nome, custoMateriais, maoDeObra, overhead, frete,
+      nome, custoMateriais, maoDeObra: maoDeObraComDificuldade, overhead, frete,
       precoMinimo, precoRecomendado, precoPremium, desconto
     };
   }
@@ -322,7 +328,7 @@
     const txt =
 `🧶 Precificador — ${r.nome}
 • Custo de materiais: ${brl(r.custoMateriais)}
-• Mão de obra + overhead + frete: ${brl(r.maoDeObra + r.overhead + r.frete)}
+• Mão de obra (com dificuldade) + overhead + frete: ${brl(r.maoDeObra + r.overhead + r.frete)}
 ————————————
 💡 Preço mínimo (sem lucro): ${brl(r.precoMinimo)}
 ✅ Preço recomendado: ${brl(r.precoRecomendado)}
