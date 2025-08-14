@@ -92,7 +92,7 @@
 
   footer{margin:20px 0 40px;color:#738096;font-size:12px;text-align:center}
 
-  /* ===== Responsividade: iOS/Android ===== */
+  /* ===== Responsividade base (iOS/Android) ===== */
   @media (max-width: 900px){
     .grid{grid-template-columns:repeat(12,1fr)}
     /* coluna única no mobile */
@@ -103,6 +103,63 @@
     table{font-size:13px}
     .btn.block{display:block;margin:0 auto;font-size:14px;padding:14px 12px}
     header{gap:10px}
+  }
+
+  /* *********** BELEZA MOBILE v2 *********** */
+  @media (max-width: 900px){
+    body { line-height: 1.5; }
+    .title { font-size: clamp(18px, 5vw, 24px); }
+    label, .hint, .kpi .sub, .muted { color: #9aa3b2; }
+  }
+  .card{
+    border-radius: 18px;
+    border: 1px solid #1f2638;
+    box-shadow: 0 12px 36px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.02);
+  }
+  .kpis{ padding: 16px; }
+  .kpi{
+    background: linear-gradient(180deg,#151827,#121523);
+    border: 1px solid #232b40;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 8px 26px rgba(0,0,0,.35);
+  }
+  .kpi .label{ letter-spacing:.3px; }
+  .kpi .value{ font-size: clamp(20px, 7vw, 30px); }
+  input[type="text"], input[type="number"], select{
+    border-radius: 14px;
+    padding: 14px 14px;
+    font-size: 16px;
+  }
+  @media (max-width: 900px){
+    table { font-size: 14px; }
+    th, td { padding: 12px 14px; }
+    tbody tr{
+      background: linear-gradient(180deg,#14182a,#101421);
+      border: 1px solid #222a3e;
+    }
+    tbody tr + tr { margin-top: 4px; }
+    tbody tr td:first-child{ border-top-left-radius:12px;border-bottom-left-radius:12px }
+    tbody tr td:last-child{ border-top-right-radius:12px;border-bottom-right-radius:12px }
+    thead th{ color:#a8b7ff; letter-spacing:.2px }
+    .panel{ padding-bottom: 96px; }
+    footer{ margin-bottom: 48px; }
+  }
+  .title .chip{
+    background:#0f1529;
+    color:#a8c7ff;
+    border:1px solid #203055;
+  }
+  .badge{
+    background:#101528;
+    border:1px solid #253354;
+    color:#b8c7ff;
+    padding:6px 10px;
+    border-radius:999px;
+  }
+  input:focus, select:focus{
+    border-color:#3a79ff;
+    box-shadow: 0 0 0 3px rgba(58,121,255,.2);
   }
 </style>
 </head>
