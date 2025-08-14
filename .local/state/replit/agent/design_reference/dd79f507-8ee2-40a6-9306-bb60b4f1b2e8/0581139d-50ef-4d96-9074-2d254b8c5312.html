@@ -1,0 +1,501 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Inteligente de Preço — Amigurumi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-bg': '#0b0b0f',
+                        'dark-panel': '#12131a',
+                        'dark-card': '#161823',
+                        'dark-input': '#0f1117',
+                        'dark-border': '#1b2030',
+                        'dark-border-light': '#22283a',
+                        'brand-primary': '#7dd3fc',
+                        'brand-secondary': '#22d3ee',
+                        'text-primary': '#e8ebf3',
+                        'text-muted': '#8b91a1',
+                        'text-accent': '#c7d2fe',
+                        'success': '#22c55e',
+                        'warning': '#f59e0b',
+                        'danger': '#ef4444'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Ubuntu', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-dark-bg text-text-primary font-inter" style="background: radial-gradient(1200px 600px at 15% -10%, #10131f 0%, transparent 60%), #0b0b0f;">
+
+    <!-- @COMPONENT: AppContainer -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        
+        <!-- @COMPONENT: Header -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <div class="flex items-center gap-3">
+                <div class="text-3xl">🧶</div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-text-primary">Calculadora Inteligente de Preço</h1>
+                    <div class="inline-flex items-center gap-2 mt-1">
+                        <span class="bg-slate-800 text-blue-300 px-3 py-1 rounded-full text-sm font-semibold border border-slate-700">Amigurumi</span>
+                        <span class="text-text-muted text-sm">Para artesãs empreendedoras</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button id="btnCarregar" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl border border-slate-700 transition-colors text-sm font-medium">
+                    <i class="fas fa-upload mr-2"></i>Carregar
+                </button>
+                <button id="btnSalvar" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl border border-slate-700 transition-colors text-sm font-medium">
+                    <i class="fas fa-save mr-2"></i>Salvar
+                </button>
+                <button id="btnCalcular" class="flex-1 sm:flex-none bg-gradient-to-r from-brand-primary to-brand-secondary hover:from-cyan-400 hover:to-sky-400 text-slate-900 px-6 py-2 rounded-xl font-bold transition-all text-sm">
+                    <i class="fas fa-calculator mr-2"></i>Calcular
+                </button>
+            </div>
+        </header>
+        <!-- @END_COMPONENT: Header -->
+
+        <!-- @COMPONENT: MainCalculator -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- @COMPONENT: InputPanel -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- Dados do Produto -->
+                <div class="bg-gradient-to-b from-dark-panel to-dark-card border border-dark-border rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-text-accent font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fas fa-tag"></i>Dados do Produto
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Nome do produto</label>
+                            <input id="nome" type="text" placeholder="Ex.: Coelhinho com jardineira" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Tamanho</label>
+                            <select id="tamanho" class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                                <option value="custom">Personalizado</option>
+                                <option value="P">P — 10–14 cm</option>
+                                <option value="M">M — 15–20 cm</option>
+                                <option value="G">G — 21–30 cm</option>
+                            </select>
+                            <p class="text-xs text-text-muted">Os tamanhos pré-preenchem horas e materiais (você pode ajustar)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custos de Materiais -->
+                <div class="bg-gradient-to-b from-dark-panel to-dark-card border border-dark-border rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-text-accent font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fas fa-shopping-cart"></i>Custos de Materiais
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Fios / Lãs (R$)</label>
+                            <input id="matFios" type="number" step="0.01" value="25" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Acessórios (olhos, botões etc.) (R$)</label>
+                            <input id="matAcess" type="number" step="0.01" value="6" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Enchimento e cola (R$)</label>
+                            <input id="matEnch" type="number" step="0.01" value="4" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Embalagem (R$)</label>
+                            <input id="matEmb" type="number" step="0.01" value="3" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tempo e Mão de Obra -->
+                <div class="bg-gradient-to-b from-dark-panel to-dark-card border border-dark-border rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-text-accent font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fas fa-clock"></i>Tempo e Mão de Obra
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Horas de produção</label>
+                            <input id="horas" type="number" step="0.1" value="6" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Valor da sua hora (R$)</label>
+                            <input id="horaValor" type="number" step="0.5" value="20" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Dificuldade extra (%)</label>
+                            <input id="dificuldade" type="number" step="1" value="10" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                            <p class="text-xs text-text-muted">Complexidade do ponto, muitas trocas de cor, bordados etc.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custos Fixos / Taxas -->
+                <div class="bg-gradient-to-b from-dark-panel to-dark-card border border-dark-border rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-text-accent font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fas fa-receipt"></i>Custos Fixos / Taxas
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Overhead (energia, desgaste) (R$)</label>
+                            <input id="overhead" type="number" step="0.50" value="2.5" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Taxa da plataforma/checkout (%)</label>
+                            <input id="taxaPlataforma" type="number" step="0.5" value="8" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Impostos (%)</label>
+                            <input id="impostos" type="number" step="0.5" value="6" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Frete incluso (R$)</label>
+                            <input id="frete" type="number" step="0.5" value="0" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lucro e Estratégia -->
+                <div class="bg-gradient-to-b from-dark-panel to-dark-card border border-dark-border rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-text-accent font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fas fa-chart-line"></i>Lucro e Estratégia
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Margem de lucro desejada (%)</label>
+                            <input id="margem" type="number" step="1" value="40" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm text-text-muted">Desconto à vista (%)</label>
+                            <input id="desconto" type="number" step="1" value="5" 
+                                   class="w-full bg-dark-input border border-dark-border-light rounded-xl px-4 py-3 text-text-primary focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none">
+                        </div>
+                        <div class="md:col-span-2 flex items-center gap-3">
+                            <input id="psico" type="checkbox" checked class="w-4 h-4 text-blue-500 bg-dark-input border-dark-border-light rounded focus:ring-blue-500 focus:ring-2">
+                            <label for="psico" class="text-sm text-text-muted">Arredondar psicológico (R$ _.90)</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- @END_COMPONENT: InputPanel -->
+
+            <!-- @COMPONENT: ResultsPanel -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- KPIs -->
+                <div class="bg-gradient-to-b from-dark-panel to-dark-card border border-dark-border rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-text-accent font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fas fa-chart-pie"></i>Resultado
+                    </h3>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-dark-card border border-dark-border-light rounded-xl p-4">
+                            <div class="text-xs text-text-muted mb-1">Custo de Materiais</div>
+                            <div id="kMat" class="text-2xl font-bold text-text-primary">R$ 0,00</div>
+                            <div class="text-xs text-text-muted mt-1">Fios + acessórios + enchimento + embalagem</div>
+                        </div>
+                        <div class="bg-dark-card border border-dark-border-light rounded-xl p-4">
+                            <div class="text-xs text-text-muted mb-1">Custo de Produção</div>
+                            <div id="kProd" class="text-2xl font-bold text-text-primary">R$ 0,00</div>
+                            <div class="text-xs text-text-muted mt-1">Horas × valor da hora (+ dificuldade + overhead)</div>
+                        </div>
+                        <div class="bg-dark-card border border-dark-border-light rounded-xl p-4">
+                            <div class="text-xs text-text-muted mb-1">Preço Recomendado</div>
+                            <div id="kPreco" class="text-2xl font-bold text-brand-primary">R$ 0,00</div>
+                            <div class="mt-2">
+                                <span id="badgeSaude" class="inline-block px-3 py-1 bg-slate-700 text-blue-300 border border-slate-600 rounded-full text-xs">Margem OK</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Faixas de Preço -->
+                <div class="bg-gradient-to-b from-dark-panel to-dark-card border border-dark-border rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-text-accent font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fas fa-tags"></i>Faixas de Preço
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left">
+                                    <th class="text-blue-300 font-semibold text-sm pb-3">Nível</th>
+                                    <th class="text-blue-300 font-semibold text-sm pb-3 text-right">Preço</th>
+                                    <th class="text-blue-300 font-semibold text-sm pb-3 text-right">À vista</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblPrecos" class="space-y-2">
+                                <!-- Tabela será preenchida via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-xs text-text-muted mt-4 p-3 bg-dark-input rounded-lg">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        O "Recomendado" já cobre taxas + impostos + sua margem. "Premium" adiciona 15% para modelos com alta demanda/complexidade.
+                    </div>
+                    <button id="btnCopiar" class="w-full mt-4 bg-gradient-to-r from-brand-primary to-brand-secondary hover:from-cyan-400 hover:to-sky-400 text-slate-900 px-4 py-3 rounded-xl font-bold transition-all">
+                        <i class="fas fa-copy mr-2"></i>Copiar Resumo
+                    </button>
+                </div>
+
+            </div>
+            <!-- @END_COMPONENT: ResultsPanel -->
+
+        </div>
+        <!-- @END_COMPONENT: MainCalculator -->
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-text-muted text-sm">
+            <div class="bg-gradient-to-b from-dark-panel to-dark-card border border-dark-border rounded-xl p-6">
+                <i class="fas fa-heart text-red-400 mr-2"></i>
+                Feito para você otimizar lucro sem adivinhar preço. Ajuste os campos, salve o preset e replique por modelo.
+                <div class="mt-2 text-xs text-text-muted">
+                    Uma ferramenta para artesãs empreendedoras prosperarem 🧶
+                </div>
+            </div>
+        </footer>
+
+    </div>
+    <!-- @END_COMPONENT: AppContainer -->
+
+    <script>
+        (() => {
+            // TODO: Implement business logic, API calls, and state management
+            
+            // Utilidades
+            const $ = (id) => document.getElementById(id);
+            const brl = (v) => v.toLocaleString("pt-BR", {style: "currency", currency: "BRL"});
+
+            function arredondarPsicologico(v) {
+                // arredonda para .90 (ex.: 87,90)
+                const inteiro = Math.floor(v);
+                const alvo = inteiro + 0.90;
+                if (alvo < v) return inteiro + 1 + 0.90; // sobe 1 real e põe .90
+                return alvo;
+            }
+
+            function preencherPorTamanho() {
+                const t = $("tamanho").value;
+                // presets baseados em média de experiência
+                const presets = {
+                    P: {horas: 4.5, fios: 18, acess: 5, ench: 3, emb: 3},
+                    M: {horas: 6.5, fios: 25, acess: 6, ench: 4, emb: 3.5},
+                    G: {horas: 9, fios: 35, acess: 7, ench: 5, emb: 4}
+                };
+                if (presets[t]) {
+                    $("horas").value = presets[t].horas;
+                    $("matFios").value = presets[t].fios;
+                    $("matAcess").value = presets[t].acess;
+                    $("matEnch").value = presets[t].ench;
+                    $("matEmb").value = presets[t].emb;
+                    calcular(); // Auto-calcular após preset
+                }
+            }
+
+            function calcular() {
+                // Entrada
+                const nome = $("nome").value || "Amigurumi";
+                const matFios = +$("matFios").value || 0;
+                const matAcess = +$("matAcess").value || 0;
+                const matEnch = +$("matEnch").value || 0;
+                const matEmb = +$("matEmb").value || 0;
+                const horas = +$("horas").value || 0;
+                const horaVal = +$("horaValor").value || 0;
+                const dificuldade = (+$("dificuldade").value || 0) / 100;
+                const overhead = +$("overhead").value || 0;
+                const taxaPlat = (+$("taxaPlataforma").value || 0) / 100;
+                const impostos = (+$("impostos").value || 0) / 100;
+                const frete = +$("frete").value || 0;
+                const margem = (+$("margem").value || 0) / 100;
+                const desconto = (+$("desconto").value || 0) / 100;
+                const usarPsico = $("psico").checked;
+
+                // Cálculos
+                const custoMateriais = matFios + matAcess + matEnch + matEmb;
+                const maoDeObra = horas * horaVal;
+                const base = custoMateriais + maoDeObra + overhead + frete;
+                const baseDif = base * (1 + dificuldade);
+
+                // gross-up para cobrir taxas (preço antes de margem)
+                const taxaTotal = taxaPlat + impostos;
+                const antesMargem = taxaTotal >= 1 ? Infinity : baseDif / (1 - taxaTotal);
+
+                const precoRecomendadoRaw = antesMargem * (1 + margem);
+                const precoRecomendado = usarPsico ? arredondarPsicologico(precoRecomendadoRaw) : precoRecomendadoRaw;
+
+                // Faixas
+                const precoMinimoRaw = antesMargem; // cobre custo + taxas, sem lucro
+                const precoMinimo = usarPsico ? arredondarPsicologico(precoMinimoRaw) : precoMinimoRaw;
+
+                const precoPremiumRaw = precoRecomendado * 1.15; // +15%
+                const precoPremium = usarPsico ? arredondarPsicologico(precoPremiumRaw) : precoPremiumRaw;
+
+                // KPI
+                $("kMat").textContent = brl(custoMateriais);
+                $("kProd").textContent = brl(maoDeObra + overhead + frete);
+                $("kPreco").textContent = brl(precoRecomendado);
+
+                const margemEfetiva = (precoRecomendado - antesMargem) / precoRecomendado;
+                const badge = $("badgeSaude");
+                
+                if (margemEfetiva >= 0.3) {
+                    badge.textContent = "Margem Excelente";
+                    badge.className = "inline-block px-3 py-1 bg-green-700 text-green-200 border border-green-600 rounded-full text-xs";
+                } else if (margemEfetiva >= 0.2) {
+                    badge.textContent = "Margem Boa";
+                    badge.className = "inline-block px-3 py-1 bg-blue-700 text-blue-200 border border-blue-600 rounded-full text-xs";
+                } else if (margemEfetiva >= 0.1) {
+                    badge.textContent = "Margem Baixa";
+                    badge.className = "inline-block px-3 py-1 bg-yellow-700 text-yellow-200 border border-yellow-600 rounded-full text-xs";
+                } else {
+                    badge.textContent = "Margem Crítica";
+                    badge.className = "inline-block px-3 py-1 bg-red-700 text-red-200 border border-red-600 rounded-full text-xs";
+                }
+
+                // Tabela de preços
+                const tbody = $("tblPrecos");
+                tbody.innerHTML = `
+                    <tr class="bg-dark-card border border-dark-border-light">
+                        <td class="py-3 px-4 rounded-l-xl text-sm">Mínimo</td>
+                        <td class="py-3 px-4 text-right text-sm">${brl(precoMinimo)}</td>
+                        <td class="py-3 px-4 text-right text-sm rounded-r-xl">${brl(precoMinimo * (1 - desconto))}</td>
+                    </tr>
+                    <tr class="bg-dark-card border border-dark-border-light">
+                        <td class="py-3 px-4 rounded-l-xl text-sm font-semibold text-brand-primary">Recomendado</td>
+                        <td class="py-3 px-4 text-right text-sm font-semibold text-brand-primary">${brl(precoRecomendado)}</td>
+                        <td class="py-3 px-4 text-right text-sm font-semibold text-brand-primary rounded-r-xl">${brl(precoRecomendado * (1 - desconto))}</td>
+                    </tr>
+                    <tr class="bg-dark-card border border-dark-border-light">
+                        <td class="py-3 px-4 rounded-l-xl text-sm">Premium</td>
+                        <td class="py-3 px-4 text-right text-sm">${brl(precoPremium)}</td>
+                        <td class="py-3 px-4 text-right text-sm rounded-r-xl">${brl(precoPremium * (1 - desconto))}</td>
+                    </tr>
+                `;
+            }
+
+            function copiarResumo() {
+                const nome = $("nome").value || "Amigurumi";
+                const precoRecomendado = $("kPreco").textContent;
+                
+                const resumo = `🧶 ${nome}
+💰 Preço recomendado: ${precoRecomendado}
+📊 Calculado com margem de lucro otimizada
+🎯 Calculadora Inteligente de Preço — Amigurumi`;
+
+                navigator.clipboard.writeText(resumo).then(() => {
+                    const btn = $("btnCopiar");
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check mr-2"></i>Copiado!';
+                    btn.className = btn.className.replace('from-brand-primary to-brand-secondary', 'from-green-500 to-green-600');
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.className = btn.className.replace('from-green-500 to-green-600', 'from-brand-primary to-brand-secondary');
+                    }, 2000);
+                });
+            }
+
+            function salvarPreset() {
+                const dados = {
+                    nome: $("nome").value,
+                    tamanho: $("tamanho").value,
+                    matFios: $("matFios").value,
+                    matAcess: $("matAcess").value,
+                    matEnch: $("matEnch").value,
+                    matEmb: $("matEmb").value,
+                    horas: $("horas").value,
+                    horaValor: $("horaValor").value,
+                    dificuldade: $("dificuldade").value,
+                    overhead: $("overhead").value,
+                    taxaPlataforma: $("taxaPlataforma").value,
+                    impostos: $("impostos").value,
+                    frete: $("frete").value,
+                    margem: $("margem").value,
+                    desconto: $("desconto").value,
+                    psico: $("psico").checked
+                };
+                
+                localStorage.setItem('amigurumiPreset', JSON.stringify(dados));
+                
+                const btn = $("btnSalvar");
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check mr-2"></i>Salvo!';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            }
+
+            function carregarPreset() {
+                const dados = JSON.parse(localStorage.getItem('amigurumiPreset') || '{}');
+                
+                Object.keys(dados).forEach(key => {
+                    const element = $(key);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = dados[key];
+                        } else {
+                            element.value = dados[key];
+                        }
+                    }
+                });
+                
+                const btn = $("btnCarregar");
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check mr-2"></i>Carregado!';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+                
+                calcular();
+            }
+
+            // Event listeners
+            $("tamanho").addEventListener("change", preencherPorTamanho);
+            $("btnCalcular").addEventListener("click", calcular);
+            $("btnCopiar").addEventListener("click", copiarResumo);
+            $("btnSalvar").addEventListener("click", salvarPreset);
+            $("btnCarregar").addEventListener("click", carregarPreset);
+
+            // Auto-calcular quando campos mudarem
+            const inputs = ['matFios', 'matAcess', 'matEnch', 'matEmb', 'horas', 'horaValor', 'dificuldade', 'overhead', 'taxaPlataforma', 'impostos', 'frete', 'margem', 'desconto', 'psico'];
+            inputs.forEach(id => {
+                const element = $(id);
+                if (element) {
+                    element.addEventListener('input', calcular);
+                    element.addEventListener('change', calcular);
+                }
+            });
+
+            // Cálculo inicial
+            calcular();
+        })();
+    </script>
+
+</body>
+</html>
